@@ -9,7 +9,7 @@ interface AddMoneyModalProps {
   onSuccess: () => void;
 }
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+const API_BASE_URL = `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api`;
 
 const AddMoneyModal: React.FC<AddMoneyModalProps> = ({ onClose, onSuccess }) => {
   const [amount, setAmount] = useState('');
@@ -25,7 +25,7 @@ const AddMoneyModal: React.FC<AddMoneyModalProps> = ({ onClose, onSuccess }) => 
 
   const fetchAdminUPI = async () => {
     try {
-      const response = await axios.get(`${API_BASE_URL}/api/user/admin-upi`);
+      const response = await axios.get(`${API_BASE_URL}/user/admin-upi`);
       setAdminUPI(response.data);
     } catch (error) {
       toast.error('Failed to fetch payment details');
@@ -49,7 +49,7 @@ const AddMoneyModal: React.FC<AddMoneyModalProps> = ({ onClose, onSuccess }) => 
         formData.append('paymentProof', paymentProof);
       }
 
-      await axios.post(`${API_BASE_URL}/api/user/add-money`, formData, {
+      await axios.post(`${API_BASE_URL}/user/add-money`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
