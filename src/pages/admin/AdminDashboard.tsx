@@ -49,6 +49,8 @@ interface User {
   createdAt: string;
 }
 
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+
 const AdminDashboard: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'overview' | 'transactions' | 'users'>('overview');
   const [stats, setStats] = useState<AdminStats>({
@@ -70,9 +72,9 @@ const AdminDashboard: React.FC = () => {
   const fetchData = async () => {
     try {
       const [statsRes, transactionsRes, usersRes] = await Promise.all([
-        axios.get('http://localhost:5000/api/admin/stats'),
-        axios.get('http://localhost:5000/api/admin/transactions/pending'),
-        axios.get('http://localhost:5000/api/admin/users')
+        axios.get(`${API_BASE_URL}/api/admin/stats`),
+        axios.get(`${API_BASE_URL}/api/admin/transactions/pending`),
+        axios.get(`${API_BASE_URL}/api/admin/users`)
       ]);
 
       setStats(statsRes.data);
@@ -87,7 +89,7 @@ const AdminDashboard: React.FC = () => {
 
   const handleTransactionAction = async (transactionId: string, status: 'approved' | 'rejected', adminNotes = '') => {
     try {
-      await axios.put(`http://localhost:5000/api/admin/transactions/${transactionId}`, {
+      await axios.put(`${API_BASE_URL}/api/admin/transactions/${transactionId}`, {
         status,
         adminNotes
       });
@@ -101,7 +103,7 @@ const AdminDashboard: React.FC = () => {
 
   const handleDeleteUser = async (userId: string) => {
     try {
-      await axios.delete(`http://localhost:5000/api/admin/users/${userId}`);
+      await axios.delete(`${API_BASE_URL}/api/admin/users/${userId}`);
       toast.success('User deleted successfully');
       setDeleteConfirm(null);
       fetchData(); // Refresh data
@@ -327,7 +329,7 @@ const AdminDashboard: React.FC = () => {
                       <div className="mb-4">
                         <p className="text-sm text-gray-300 mb-2">Payment Proof:</p>
                         <img 
-                          src={`http://localhost:5000/uploads/${transaction.paymentProof}`}
+                          src={`${API_BASE_URL}/uploads/${transaction.paymentProof}`}
                           alt="Payment proof"
                           className="max-w-xs rounded-lg"
                         />
