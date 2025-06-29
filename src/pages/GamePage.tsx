@@ -96,6 +96,10 @@ const GamePage: React.FC = () => {
       setGameResults(results);
       setCooldownTime(results.cooldownTime);
       setGameState('finished');
+      
+      // Store last game time for cooldown tracking
+      localStorage.setItem(`lastGame_${user.id}`, Date.now().toString());
+      
       refreshUser(); // Refresh user data to update wallet balance
     });
 
@@ -359,7 +363,7 @@ const GamePage: React.FC = () => {
             {countdown > 0 ? countdown : 'GO!'}
           </motion.div>
           <p className="text-xl text-gray-300">
-            {countdown > 0 ? 'Get ready...' : 'Tap GREEN dots for +1, RED dots give -1 penalty!'}
+            {countdown > 0 ? 'Get ready...' : 'GREEN dots: +1 point | RED dots: -1 penalty!'}
           </p>
         </motion.div>
       </div>
@@ -417,9 +421,9 @@ const GamePage: React.FC = () => {
           )}
           
           <div className="absolute bottom-4 left-4 text-white text-sm">
-            <p>• Tap GREEN dots for +1 point</p>
-            <p>• RED dots give -1 penalty</p>
-            <p>• Speed increases with correct taps</p>
+            <p>• GREEN dots: +1 point</p>
+            <p>• RED dots: -1 penalty</p>
+            <p>• Speed increases with green taps</p>
           </div>
         </div>
 
