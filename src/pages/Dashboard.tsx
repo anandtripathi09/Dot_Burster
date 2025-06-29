@@ -25,7 +25,7 @@ interface GameHistory {
   createdAt: string;
 }
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+const API_BASE_URL = `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api`;
 
 const Dashboard: React.FC = () => {
   const { user, logout, refreshUser } = useAuth();
@@ -71,8 +71,8 @@ const Dashboard: React.FC = () => {
   const fetchData = async () => {
     try {
       const [transactionsRes, gameHistoryRes] = await Promise.all([
-        axios.get(`${API_BASE_URL}/api/user/transactions`),
-        axios.get(`${API_BASE_URL}/api/game/history`)
+        axios.get(`${API_BASE_URL}/user/transactions`),
+        axios.get(`${API_BASE_URL}/game/history`)
       ]);
       
       setTransactions(transactionsRes.data);
