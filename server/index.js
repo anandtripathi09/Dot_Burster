@@ -19,7 +19,7 @@ const server = createServer(app);
 // Define allowed origins for CORS
 const allowedOrigins = [
   'http://localhost:5173',
-  'https://dot-burster-6.onrender.com',
+  'https://dot-burster.onrender.com',
   'https://dot-burster-1.onrender.com'
 ];
 
