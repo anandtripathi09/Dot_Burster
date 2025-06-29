@@ -1,5 +1,3 @@
-import React from 'react';
-
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { Link } from 'react-router-dom';
@@ -26,6 +24,8 @@ interface GameHistory {
   isWinner: boolean;
   createdAt: string;
 }
+
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 const Dashboard: React.FC = () => {
   const { user, logout, refreshUser } = useAuth();
@@ -71,8 +71,8 @@ const Dashboard: React.FC = () => {
   const fetchData = async () => {
     try {
       const [transactionsRes, gameHistoryRes] = await Promise.all([
-        axios.get('http://localhost:5000/api/user/transactions'),
-        axios.get('http://localhost:5000/api/game/history')
+        axios.get(`${API_BASE_URL}/api/user/transactions`),
+        axios.get(`${API_BASE_URL}/api/game/history`)
       ]);
       
       setTransactions(transactionsRes.data);
