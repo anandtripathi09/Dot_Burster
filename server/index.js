@@ -17,8 +17,9 @@ const app = express();
 const server = createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: "https://dot-burster-6.onrender.com",
-    methods: ["GET", "POST"]
+    origin: ["http://localhost:5173", "https://dot-burster-6.onrender.com"],
+    methods: ["GET", "POST"],
+    credentials: true
   }
 });
 
@@ -38,7 +39,7 @@ initializeApp();
 
 // Middleware
 app.use(cors({
-  origin: "http://localhost:5173",
+  origin: ["http://localhost:5173", "https://dot-burster-6.onrender.com"],
   credentials: true
 }));
 app.use(express.json());
@@ -57,7 +58,7 @@ const PORT = process.env.PORT || 5000;
 
 server.listen(PORT, () => {
   console.log(`🌟 Server running on port ${PORT}`);
-  console.log(`🔗 Frontend URL: http://localhost:5173`);
-  console.log(`🔗 Backend URL: http://localhost:${PORT}`);
-  console.log(`👨‍💼 Admin Panel: http://localhost:5173/admin`);
+  console.log(`🔗 Frontend URL: https://dot-burster-6.onrender.com`);
+  console.log(`🔗 Backend URL: https://dot-burster-1.onrender.com`);
+  console.log(`👨‍💼 Admin Panel: https://dot-burster-6.onrender.com/admin`);
 });
