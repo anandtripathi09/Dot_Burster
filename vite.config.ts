@@ -20,6 +20,8 @@ export default defineConfig({
         },
       },
     },
+    // Copy _redirects file to dist folder for Render
+    copyPublicDir: true,
   },
   server: {
     port: 5173,
@@ -30,4 +32,6 @@ export default defineConfig({
     port: 4173,
     host: true,
   },
+  // Ensure _redirects file is copied during build
+  publicDir: 'public',
 });
