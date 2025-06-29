@@ -23,32 +23,35 @@ function AppRoutes() {
 
   return (
     <Routes>
-      <Route path="/" element={!user ? <HomePage /> : <Navigate to="/dashboard" />} />
-      <Route path="/login" element={!user ? <LoginPage /> : <Navigate to="/dashboard" />} />
-      <Route path="/register" element={!user ? <RegisterPage /> : <Navigate to="/dashboard" />} />
+      <Route path="/" element={!user ? <HomePage /> : <Navigate to="/dashboard" replace />} />
+      <Route path="/login" element={!user ? <LoginPage /> : <Navigate to="/dashboard" replace />} />
+      <Route path="/register" element={!user ? <RegisterPage /> : <Navigate to="/dashboard" replace />} />
       
       {/* Protected User Routes */}
       <Route 
         path="/demo" 
-        element={user && !user.hasPlayedDemo ? <DemoGame /> : <Navigate to="/dashboard" />} 
+        element={user && !user.hasPlayedDemo ? <DemoGame /> : <Navigate to="/dashboard" replace />} 
       />
       <Route 
         path="/dashboard" 
         element={user ? (
-          !user.hasPlayedDemo ? <Navigate to="/demo" /> : <Dashboard />
-        ) : <Navigate to="/login" />} 
+          !user.hasPlayedDemo ? <Navigate to="/demo" replace /> : <Dashboard />
+        ) : <Navigate to="/login" replace />} 
       />
       <Route 
         path="/game" 
-        element={user && user.hasPlayedDemo ? <GamePage /> : <Navigate to="/dashboard" />} 
+        element={user && user.hasPlayedDemo ? <GamePage /> : <Navigate to="/dashboard" replace />} 
       />
 
       {/* Admin Routes */}
-      <Route path="/admin" element={!isAdmin ? <AdminLogin /> : <Navigate to="/admin/dashboard" />} />
+      <Route path="/admin" element={!isAdmin ? <AdminLogin /> : <Navigate to="/admin/dashboard" replace />} />
       <Route 
         path="/admin/dashboard" 
-        element={isAdmin ? <AdminDashboard /> : <Navigate to="/admin" />} 
+        element={isAdmin ? <AdminDashboard /> : <Navigate to="/admin" replace />} 
       />
+
+      {/* Catch all route - redirect to home */}
+      <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
 }
