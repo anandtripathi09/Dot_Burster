@@ -19,8 +19,7 @@ const server = createServer(app);
 // Define allowed origins for CORS
 const allowedOrigins = [
   'http://localhost:5173',
-  'https://dot-burster.onrender.com',
-  'https://dot-burster-1.onrender.com'
+  'https://dot-burster-1.onrender.com'  // Frontend URL
 ];
 
 const io = new Server(server, {
@@ -111,9 +110,9 @@ const PORT = process.env.PORT || 5000;
 
 server.listen(PORT, '0.0.0.0', () => {
   console.log(`🌟 Server running on port ${PORT}`);
-  console.log(`🔗 Frontend URL: https://dot-burster-6.onrender.com`);
-  console.log(`🔗 Backend URL: https://dot-burster-1.onrender.com`);
-  console.log(`👨‍💼 Admin Panel: https://dot-burster-6.onrender.com/admin`);
+  console.log(`🔗 Frontend URL: https://dot-burster-1.onrender.com`);
+  console.log(`🔗 Backend URL: https://dot-burster.onrender.com`);
+  console.log(`👨‍💼 Admin Panel: https://dot-burster-1.onrender.com/admin`);
   console.log(`🌍 Allowed Origins:`, allowedOrigins);
   console.log(`🔧 Environment:`, process.env.NODE_ENV || 'development');
 });
