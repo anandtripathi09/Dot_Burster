@@ -10,6 +10,8 @@ interface WithdrawModalProps {
   onSuccess: () => void;
 }
 
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+
 const WithdrawModal: React.FC<WithdrawModalProps> = ({ onClose, onSuccess }) => {
   const [amount, setAmount] = useState('');
   const [upiId, setUpiId] = useState('');
@@ -34,7 +36,7 @@ const WithdrawModal: React.FC<WithdrawModalProps> = ({ onClose, onSuccess }) => 
     setLoading(true);
 
     try {
-      await axios.post('http://localhost:5000/api/user/withdraw', {
+      await axios.post(`${API_BASE_URL}/api/user/withdraw`, {
         amount: withdrawAmount,
         upiId,
       });
