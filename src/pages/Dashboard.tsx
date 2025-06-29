@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { Link } from 'react-router-dom';
-import { Wallet, Plus, Minus, Trophy, History, Target, LogOut, Zap, Users, Star, TrendingUp } from 'lucide-react';
+import { Wallet, Plus, Minus, Trophy, History, Target, LogOut, Zap, Users, Star, TrendingUp, Clock } from 'lucide-react';
 import { motion } from 'framer-motion';
 import AddMoneyModal from '../components/AddMoneyModal';
 import WithdrawModal from '../components/WithdrawModal';
@@ -29,6 +29,8 @@ const Dashboard: React.FC = () => {
   const { user, logout, refreshUser } = useAuth();
   const [showAddMoney, setShowAddMoney] = useState(false);
   const [showWithdraw, setShowWithdraw] = useState(false);
+  const [showCooldownModal, setShowCooldownModal] = useState(false);
+  const [cooldownTime, setCooldownTime] = useState(0);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [gameHistory, setGameHistory] = useState<GameHistory[]>([]);
   const [loading, setLoading] = useState(true);
@@ -36,6 +38,33 @@ const Dashboard: React.FC = () => {
   useEffect(() => {
     fetchData();
   }, []);
+
+  // Check for cooldown when component mounts
+  useEffect(() => {
+    const lastGameTime = localStorage.getItem(`lastGame_${user?.id}`);
+    if (lastGameTime) {
+      const timeSinceLastGame = Date.now() - parseInt(lastGameTime);
+      const remainingCooldown = 45000 - timeSinceLastGame; // 45 seconds
+      
+      if (remainingCooldown > 0) {
+        setCooldownTime(Math.ceil(remainingCooldown / 1000));
+        startCooldownTimer(Math.ceil(remainingCooldown / 1000));
+      }
+    }
+  }, [user?.id]);
+
+  const startCooldownTimer = (seconds: number) => {
+    setCooldownTime(seconds);
+    const timer = setInterval(() => {
+      setCooldownTime(prev => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+  };
 
   const fetchData = async () => {
     try {
@@ -56,6 +85,23 @@ const Dashboard: React.FC = () => {
   const handleLogout = () => {
     logout();
     toast.success('Logged out successfully');
+  };
+
+  const handleJoinGame = () => {
+    // Check if user has sufficient balance
+    if ((user?.walletBalance || 0) < 30) {
+      toast.error('Insufficient balance! Add money to your wallet.');
+      return;
+    }
+
+    // Check cooldown
+    if (cooldownTime > 0) {
+      setShowCooldownModal(true);
+      return;
+    }
+
+    // Navigate to game
+    window.location.href = '/game';
   };
 
   if (loading) {
@@ -262,19 +308,33 @@ const Dashboard: React.FC = () => {
                     <div className="text-sm text-green-200 space-y-1">
                       <p>• System groups every 3 players automatically</p>
                       <p>• If 6 players waiting → 2 games start in parallel</p>
-                      <p>• Tap GREEN dots only for points</p>
+                      <p>• GREEN dots: +1 point | RED dots: -1 penalty</p>
                       <p>• 10 seconds gameplay • Highest score wins</p>
                       <p>• Platform fee: ₹30 • Winner gets: ₹60</p>
                     </div>
                   </div>
                   
-                  <Link
-                    to="/game"
-                    className="inline-flex items-center space-x-2 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold py-4 px-8 rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-purple-500/25"
+                  <button
+                    onClick={handleJoinGame}
+                    disabled={cooldownTime > 0}
+                    className={`inline-flex items-center space-x-2 font-bold py-4 px-8 rounded-xl transition-all duration-300 transform shadow-lg ${
+                      cooldownTime > 0
+                        ? 'bg-gray-600 cursor-not-allowed text-gray-300'
+                        : 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white hover:scale-105 hover:shadow-purple-500/25'
+                    }`}
                   >
-                    <Zap className="h-5 w-5" />
-                    <span>Join Game (₹30)</span>
-                  </Link>
+                    {cooldownTime > 0 ? (
+                      <>
+                        <Clock className="h-5 w-5" />
+                        <span>Wait {cooldownTime}s</span>
+                      </>
+                    ) : (
+                      <>
+                        <Zap className="h-5 w-5" />
+                        <span>Join Game (₹30)</span>
+                      </>
+                    )}
+                  </button>
                   
                   {(user?.walletBalance || 0) < 30 && (
                     <p className="text-red-400 mt-4 text-sm">
@@ -419,6 +479,42 @@ const Dashboard: React.FC = () => {
             refreshUser();
           }}
         />
+      )}
+
+      {/* Cooldown Modal */}
+      {showCooldownModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-white/10 backdrop-blur-sm rounded-2xl p-8 max-w-md w-full border border-white/20 text-center"
+          >
+            <div className="w-16 h-16 bg-gradient-to-br from-yellow-500 to-orange-500 rounded-2xl flex items-center justify-center mx-auto mb-6">
+              <Clock className="h-8 w-8 text-white" />
+            </div>
+            
+            <h2 className="text-2xl font-bold text-white mb-4">Please Wait</h2>
+            <p className="text-gray-300 mb-6">
+              You need to wait {cooldownTime} seconds before joining another game.
+            </p>
+            
+            <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-xl p-6 mb-6">
+              <div className="text-4xl font-bold text-yellow-400 mb-2">
+                {cooldownTime}s
+              </div>
+              <p className="text-yellow-300 text-sm">
+                Cooldown remaining
+              </p>
+            </div>
+            
+            <button
+              onClick={() => setShowCooldownModal(false)}
+              className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200"
+            >
+              Okay
+            </button>
+          </motion.div>
+        </div>
       )}
     </div>
   );
