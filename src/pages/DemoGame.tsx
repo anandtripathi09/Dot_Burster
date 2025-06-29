@@ -1,5 +1,3 @@
-import React from 'react';
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
@@ -15,6 +13,8 @@ interface Dot {
   x: number;
   y: number;
 }
+
+const API_BASE_URL = `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api`;
 
 const DemoGame: React.FC = () => {
   const [gameState, setGameState] = useState<'waiting' | 'playing' | 'finished'>('waiting');
@@ -103,7 +103,7 @@ const DemoGame: React.FC = () => {
 
   const completeDemo = async () => {
     try {
-      await axios.post('http://localhost:5000/api/user/complete-demo');
+      await axios.post(`${API_BASE_URL}/user/complete-demo`);
       updateUser({ hasPlayedDemo: true });
       toast.success('Demo completed! You can now play real games.');
       navigate('/dashboard');
